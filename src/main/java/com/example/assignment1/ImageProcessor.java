@@ -13,25 +13,25 @@ public class ImageProcessor {
     }
 
 
-    public static BufferedImage convertToBlackAndWhite(BufferedImage originalImage, Color targetColor, double threshold) {
+    public static BufferedImage convertToBlackAndWhite(BufferedImage originalImage) {
         int width = originalImage.getWidth();
         int height = originalImage.getHeight();
         BufferedImage bwImage = new BufferedImage(width, height, BufferedImage.TYPE_BYTE_BINARY);
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                Color pixelColor = new Color(originalImage.getRGB(x, y));
-                if (colorSimilarity(pixelColor, targetColor) < threshold) {
-                    bwImage.setRGB(x, y, Color.WHITE.getRGB());
-                } else {
-                    bwImage.setRGB(x, y, Color.BLACK.getRGB());
-                }
+                Color originalColor = new Color(originalImage.getRGB(x, y));
+                int red = originalColor.getRed();
+                int green = originalColor.getGreen();
+                int blue = originalColor.getBlue();
+                int luminance = (int) (0.2126 * red + 0.7152 * green + 0.0722 * blue);
+                Color newColor = luminance < 128 ? Color.BLACK : Color.WHITE;
+                bwImage.setRGB(x, y, newColor.getRGB());
             }
         }
         return bwImage;
     }
-
-
 }
+
 
 

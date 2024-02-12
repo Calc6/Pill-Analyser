@@ -2,18 +2,20 @@ package com.example.assignment1;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.MenuItem;
 import javafx.scene.effect.ColorAdjust;
+import javafx.scene.image.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.PixelWriter;
-import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
+import javafx.scene.paint.Color;
+
+import javafx.embed.swing.SwingFXUtils;
 
 
 
 
 import java.awt.*;
+import java.awt.event.MouseEvent;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.awt.image.BufferedImage;
 
@@ -38,10 +40,11 @@ public class MainController {
 
     private ToggleGroup imageModeToggleGroup = new ToggleGroup();
     private final ColorAdjust grayscaleEffect = new ColorAdjust();
+    private Color selectedColor;
 
     @FXML
     private void initialize() {
-        // Set up the slider properties
+        // Slider setup
         resizeSlider.setMin(0.5);
         resizeSlider.setMax(2.0);
         resizeSlider.setValue(1.0);
@@ -49,9 +52,22 @@ public class MainController {
         // Bind the image size to the slider value
         imageView.fitWidthProperty().bind(resizeSlider.valueProperty().multiply(200));
         imageView.fitHeightProperty().bind(resizeSlider.valueProperty().multiply(150));
+        imageView.setOnMouseClicked(this::onImageClick);
 
-        grayscaleEffect.setSaturation(0);
-        grayscaleToggleButton.setSelected(false);
+        // Set up the toggle group for image modes
+        originalRadioButton.setToggleGroup(imageModeToggleGroup);
+        grayscaleRadioButton.setToggleGroup(imageModeToggleGroup);
+        bwRadioButton.setToggleGroup(imageModeToggleGroup);
+
+        // Set default image mode
+        originalRadioButton.setSelected(true);
+
+        // Apply grayscale effect based on toggle button
+        grayscaleEffect.setSaturation(0); // Initially no grayscale
+        imageView.setEffect(grayscaleEffect); // Apply effect to imageView
+
+        // Listen for changes in the toggle group to adjust image accordingly
+        imageModeToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> handleImageModeChange());
     }
 
     @FXML
@@ -89,7 +105,7 @@ public class MainController {
             Color targetColor = Color.WHITE; // Example: dynamically set this based on user input
             double threshold = 50; // Example: dynamically set this based on user input
 
-            BufferedImage bwImage = ImageProcessor.convertToBlackAndWhite(bufferedImage, targetColor, threshold);
+            BufferedImage bwImage = ImageProcessor.convertToBlackAndWhite(bufferedImage);
             Image newFxImage = convertToFxImage(bwImage);
             imageView.setImage(newFxImage);
         }
@@ -109,22 +125,63 @@ public class MainController {
 
     @FXML
     private void handleImageModeChange() {
-        if (originalImage == null) return;
-
-        RadioButton selectedMode = (RadioButton) imageModeToggleGroup.getSelectedToggle();
-
-        if ("Grayscale".equals(selectedMode.getText())) {
-            // Apply grayscale effect
-            imageView.setImage(handleToggleGrayscale(originalImage););
-        } else if ("Black and White".equals(selectedMode.getText())) {
-            // Convert to black and white and display
-            imageView.setImage(handleConvertToBlackAndWhite(originalImage););
+        if (imageModeToggleGroup.getSelectedToggle().equals(bwRadioButton)) {
+            BufferedImage bufferedImage = convertFxImageToBufferedImage(imageView.getImage());
+            BufferedImage bwImage = ImageProcessor.convertToBlackAndWhite(bufferedImage);
+            Image newFxImage = convertToFxImage(bwImage);
+            imageView.setImage(newFxImage);
+        } else if (imageModeToggleGroup.getSelectedToggle().equals(grayscaleRadioButton)) {
+            // Grayscale conversion logic...
         } else {
-            // Display original image
-            imageView.setImage(originalImage);
+            // Reset to original image...
         }
     }
 
+    @FXML
+    private void onImageClick(javafx.scene.input.MouseEvent event) {
+        System.out.println("Image clicked at");
+        Image image = imageView.getImage();
+        PixelReader pixelReader = image.getPixelReader();
+        if (pixelReader == null) {
+            return;
+        }
+
+        int x = (int) event.getX();
+        int y = (int) event.getY();
+
+        Color sampledColor = pixelReader.getColor(x, y);
+
+        this.selectedColor = sampledColor;
+    }
+
+    private double colorSimilarity(Color c1, Color c2){
+        double redDiff = c1.getRed() - c2.getRed();
+        double greenDiff = c1.getGreen() - c2.getGreen();
+        double blueDiff = c1.getBlue() - c2.getBlue();
+        return Math.sqrt(redDiff * redDiff + greenDiff * greenDiff + blueDiff * blueDiff);
+    }
+
+    private Image convertToBlackAndWhite(Image originalImage,javafx.scene.paint.Color targetColor, double threshold) {
+        int width = (int) originalImage.getWidth();
+        int height = (int) originalImage.getHeight();
+        WritableImage bwImage = new WritableImage(width, height);
+        PixelWriter pixelWriter = bwImage.getPixelWriter();
+        PixelReader pixelReader = originalImage.getPixelReader();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                Color color = pixelReader.getColor(x, y);
+                double distance = colorSimilarity(color, targetColor);
+                if (distance <= threshold) {
+                    pixelWriter.setColor(x, y, Color.WHITE);
+                } else {
+                    pixelWriter.setColor(x, y, Color.BLACK);
+                }
+            }
+
+        }
+        return bwImage;
+    }
 
 
 
