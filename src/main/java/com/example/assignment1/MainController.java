@@ -1,13 +1,19 @@
 package com.example.assignment1;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.Slider;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
+
+
+
+
+import java.awt.*;
 import java.io.File;
 import java.awt.image.BufferedImage;
 
@@ -22,7 +28,15 @@ public class MainController {
 
     @FXML
     private ToggleButton grayscaleToggleButton;
+    @FXML
+    private RadioButton originalRadioButton;
+    @FXML
+    private RadioButton grayscaleRadioButton;
+    @FXML
+    private RadioButton bwRadioButton;
+    private Image originalImage;
 
+    private ToggleGroup imageModeToggleGroup = new ToggleGroup();
     private final ColorAdjust grayscaleEffect = new ColorAdjust();
 
     @FXML
@@ -64,6 +78,55 @@ public class MainController {
         }
         imageView.setEffect(grayscaleEffect);
     }
+
+    @FXML
+    private void handleConvertToBlackAndWhite() {
+        Image fxImage = imageView.getImage();
+        if (fxImage != null) {
+            BufferedImage bufferedImage = convertFxImageToBufferedImage(fxImage);
+
+            // Assuming you have a way to choose targetColor and set threshold
+            Color targetColor = Color.WHITE; // Example: dynamically set this based on user input
+            double threshold = 50; // Example: dynamically set this based on user input
+
+            BufferedImage bwImage = ImageProcessor.convertToBlackAndWhite(bufferedImage, targetColor, threshold);
+            Image newFxImage = convertToFxImage(bwImage);
+            imageView.setImage(newFxImage);
+        }
+    }
+
+    private BufferedImage convertFxImageToBufferedImage(Image fxImage) {
+        BufferedImage bufferedImage = new BufferedImage((int) fxImage.getWidth(), (int) fxImage.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = bufferedImage.createGraphics();
+        javafx.embed.swing.SwingFXUtils.fromFXImage(fxImage, bufferedImage);
+        g.dispose();
+        return bufferedImage;
+    }
+
+    private Image convertToFxImage(BufferedImage bi) {
+        return javafx.embed.swing.SwingFXUtils.toFXImage(bi, null);
+    }
+
+    @FXML
+    private void handleImageModeChange() {
+        if (originalImage == null) return;
+
+        RadioButton selectedMode = (RadioButton) imageModeToggleGroup.getSelectedToggle();
+
+        if ("Grayscale".equals(selectedMode.getText())) {
+            // Apply grayscale effect
+            imageView.setImage(handleToggleGrayscale(originalImage););
+        } else if ("Black and White".equals(selectedMode.getText())) {
+            // Convert to black and white and display
+            imageView.setImage(handleConvertToBlackAndWhite(originalImage););
+        } else {
+            // Display original image
+            imageView.setImage(originalImage);
+        }
+    }
+
+
+
 
     @FXML
     private void handleClose() {
@@ -130,6 +193,5 @@ public class MainController {
             }
         }
     }
-
 
 }
