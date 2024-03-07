@@ -3,20 +3,22 @@ package com.example.assignment1;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.*;
 import javafx.stage.FileChooser;
-import javafx.scene.paint.Color; // Correct import for JavaFX Color, replacing java.awt.Color
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 import java.io.File;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.paint.Color;
+
 
 public class MainController {
 
     @FXML
     private ImageView imageView;
+
+    @FXML
+    private ImageView imageView2;
 
     @FXML
     private Slider resizeSlider;
@@ -46,22 +48,10 @@ public class MainController {
 
     @FXML
     private void initialize() {
-        setupSlider();
         setupImageModeToggleGroup();
-        thresholdValueLabel.setText(String.format("Threshold Value: %.3f", thresholdSlider.getValue()));
 
-        thresholdSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
-            thresholdValueLabel.setText(String.format("Threshold Value: %.3f", newValue.doubleValue()));
-        });
     }
 
-    private void setupSlider() {
-        resizeSlider.setMin(0.5);
-        resizeSlider.setMax(2.0);
-        resizeSlider.setValue(1.0);
-        imageView.fitWidthProperty().bind(resizeSlider.valueProperty().multiply(200));
-        imageView.fitHeightProperty().bind(resizeSlider.valueProperty().multiply(150));
-    }
 
     private void setupImageModeToggleGroup() {
         originalRadioButton.setToggleGroup(imageModeToggleGroup);
@@ -77,8 +67,9 @@ public class MainController {
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif", "*.bmp", "*.jpeg"));
         File selectedFile = fileChooser.showOpenDialog(null);
         if (selectedFile != null) {
-            originalImage = new Image(selectedFile.toURI().toString());
+            originalImage = new Image(selectedFile.toURI().toString(),imageView.getFitWidth(),imageView.getFitHeight(),false,true);
             imageView.setImage(originalImage);
+            imageView2.setImage(originalImage);
         }
     }
 
@@ -139,15 +130,9 @@ public class MainController {
     }
 
     private boolean colorSimilarity(Color c1, Color c2, double tolerance) {
-        double rDiff = Math.abs(c1.getRed() - c2.getRed());
-        double gDiff = Math.abs(c1.getGreen() - c2.getGreen());
-        double bDiff = Math.abs(c1.getBlue() - c2.getBlue());
-        return (rDiff + gDiff + bDiff) / 3 < tolerance;
+        return Math.abs(c1.getHue() - c2.getHue()) < tolerance*180;
     }
 
-    private boolean isColorRed(Color color) {
-        return color.getRed() > 0.8 && color.getGreen() < 0.2 && color.getBlue() < 0.2;
-    }
 
 
     @FXML
@@ -159,7 +144,7 @@ public class MainController {
                 e.printStackTrace();
             }
         } else if (grayscaleRadioButton.isSelected()) {
-            // Handle grayscale mode
+
         } else if (originalRadioButton.isSelected()) {
             imageView.setImage(originalImage);
         }
@@ -193,9 +178,11 @@ public class MainController {
             System.out.println("Error: " + e);
         }
     }
+
+
+
     @FXML
     private void handleClose(ActionEvent event) {
-        // Close the current stage (window)
         Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();

@@ -16,7 +16,7 @@ public class Main extends Application {
 
         MainController controller = loader.getController();
 
-        Scene scene = new Scene(root, 600, 400);
+        Scene scene = new Scene(root, 800, 600);
         primaryStage.setScene(scene);
         primaryStage.setTitle("Pill and Capsule Analyzer");
         primaryStage.show();
