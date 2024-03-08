@@ -27,25 +27,15 @@
       </menus>
     </MenuBar>
     <HBox alignment="CENTER" spacing="20">
-      <!-- VBox for Black and White Conversion Image -->
       <VBox alignment="CENTER" spacing="5">
         <Label text="Black and White Conversion"/>
-        <ImageView fx:id="imageView" fitHeight="250.0" fitWidth="300.0" onMouseClicked="#onImageClick" pickOnBounds="true"/>
+        <ImageView fx:id="bAndWImageView" fitHeight="250.0" fitWidth="300.0" onMouseClicked="#onImageClick" pickOnBounds="true"/>
       </VBox>
-      <!-- VBox for Normal Image -->
+      <Button text="Reset to Original" onAction="#handleResetToOriginal"/>
       <VBox alignment="CENTER" spacing="5">
         <Label text="Normal Image"/>
-        <ImageView fx:id="imageView2" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true"/>
+        <ImageView fx:id="normalImageView" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true"/>
       </VBox>
-    </HBox>
-    <HBox alignment="CENTER" spacing="10">
-      <RadioButton fx:id="originalRadioButton" onAction="#handleImageModeChange" selected="true" text="Original"/>
-      <RadioButton fx:id="grayscaleRadioButton" onAction="#handleImageModeChange" text="Grayscale"/>
-      <RadioButton fx:id="bwRadioButton" onAction="#handleImageModeChange" text="Black and White"/>
-    </HBox>
-    <HBox alignment="CENTER" prefHeight="100.0" prefWidth="600.0" spacing="10" VBox.vgrow="ALWAYS">
-      <Slider fx:id="resizeSlider" maxWidth="300.0"/>
-      <VBox spacing="10"/>
     </HBox>
   </children>
 </VBox>
