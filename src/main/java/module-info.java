@@ -3,6 +3,7 @@ module com.example.assignment1 {
     requires javafx.fxml;
     requires java.desktop;
     requires javafx.swing;
+    requires junit;
 
 
     opens com.example.assignment1 to javafx.fxml;

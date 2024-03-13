@@ -33,7 +33,7 @@
             <version>19</version>
         </dependency>
 
-        <!-- JUnit dependencies -->
+        <!-- JUnit 5 dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>

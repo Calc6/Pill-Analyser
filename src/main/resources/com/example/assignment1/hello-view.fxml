@@ -34,7 +34,9 @@
       <Button text="Reset to Original" onAction="#handleResetToOriginal"/>
       <VBox alignment="CENTER" spacing="5">
         <Label text="Normal Image"/>
+        <Pane fx:id="origPane">
         <ImageView fx:id="normalImageView" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true"/>
+        </Pane>
       </VBox>
     </HBox>
   </children>
