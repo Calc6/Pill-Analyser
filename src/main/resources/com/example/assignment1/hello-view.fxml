@@ -31,11 +31,11 @@
         <Label text="Black and White Conversion"/>
         <ImageView fx:id="bAndWImageView" fitHeight="250.0" fitWidth="300.0" onMouseClicked="#onImageClick" pickOnBounds="true"/>
       </VBox>
-      <Button text="Reset to Original" onAction="#handleResetToOriginal"/>
+      <Button text="Reset to Original" onAction="#ResetToOriginal"/>
       <VBox alignment="CENTER" spacing="5">
         <Label text="Normal Image"/>
         <Pane fx:id="origPane">
-        <ImageView fx:id="normalImageView" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true"/>
+          <ImageView fx:id="normalImageView" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true"/>
         </Pane>
       </VBox>
     </HBox>
