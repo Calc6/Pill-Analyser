@@ -5,6 +5,8 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.image.*;
 import javafx.scene.layout.Pane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -183,6 +185,7 @@ public class MainController {
         Platform.runLater(() -> {
             origPane.getChildren().removeIf(node -> node instanceof Rectangle || node instanceof Text);
 
+            // Find root values indicating distinct components
             HashSet<Integer> rootValues = new HashSet<>();
             for (int i = 0; i < imageArray.length; i++) {
                 if (imageArray[i] != -1) {
@@ -191,18 +194,14 @@ public class MainController {
                 }
             }
 
-            // Count the total number of pills
-            int totalPills = rootValues.size();
-            Text countText = new Text("Total Pills: " + totalPills);
-            countText.setX(10);
-            countText.setY(20);
-            origPane.getChildren().add(countText);
+            int totalPills = 0;
 
             for (int rootValue : rootValues) {
                 int minX = Integer.MAX_VALUE;
                 int minY = Integer.MAX_VALUE;
                 int maxX = 0;
                 int maxY = 0;
+                int pillCount = 0;
 
                 for (int i = 0; i < imageArray.length; i++) {
                     if (findRoot(imageArray, i) == rootValue) {
@@ -210,23 +209,44 @@ public class MainController {
                         int x = i % width; // Calculate x position.
                         int y = i / width; // Calculate y position.
 
+
                         if (x < minX) minX = x;
                         if (y < minY) minY = y;
                         if (x > maxX) maxX = x;
                         if (y > maxY) maxY = y;
+
+
+                        if (imageArray[i] != -1) {
+                            pillCount++;
+                        }
                     }
                 }
 
-                // Draw a rectangle around the component if its larger than 10 pixels
-                if ((maxX - minX + 1) * (maxY - minY + 1) > 10){
+                // Draw a rectangle around the component if it's larger than 10 pixels
+                if ((maxX - minX + 1) * (maxY - minY + 1) > 10) {
                     Rectangle rect = new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
                     rect.setStroke(Color.GREEN);
                     rect.setFill(Color.TRANSPARENT);
                     origPane.getChildren().add(rect);
+
+
+                    Text text = new Text((minX + maxX) / 2, (minY + maxY) / 2, "Pills: " + pillCount + ", Size: " + ((maxX - minX + 1) * (maxY - minY + 1)));
+                    text.setFont(Font.font("Verdana", FontWeight.NORMAL, 7));
+                    origPane.getChildren().add(text);
+
+
+                    totalPills += pillCount;
                 }
             }
+
+            Text totalText = new Text("Total Pills: " + totalPills);
+            totalText.setX(10); // Set X position of the total count text
+            totalText.setY(20); // Set Y position of the total count text
+            totalText.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
+            origPane.getChildren().add(totalText);
         });
     }
+
 
 
 
