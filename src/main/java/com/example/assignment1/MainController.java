@@ -7,6 +7,8 @@ import javafx.scene.image.*;
 import javafx.scene.layout.Pane;
 import javafx.stage.FileChooser;
 import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+
 import javafx.stage.Stage;
 import javafx.event.ActionEvent;
 
@@ -22,7 +24,7 @@ import javafx.scene.shape.Rectangle;
 
 
 import javafx.scene.input.MouseEvent;
-import org.w3c.dom.Text;
+
 
 public class MainController {
     UnionFind uf;
@@ -45,6 +47,7 @@ public class MainController {
             normalImageView.setImage(originalImage);
         }
     }
+
 
 
 
@@ -79,7 +82,7 @@ public class MainController {
 
 
  // Handles the black and white conversion
-    private void bAndw(Color targetColor){
+    public void bAndw(Color targetColor){
 
         if (originalImage == null) {
             System.out.println("No image loaded.");
@@ -165,7 +168,7 @@ public class MainController {
         uf.displayDSAsText(width);
     }
 
-    // Counts distinct connected components in the image.
+    // Counts distinct components in the image.
     public int countComponents(UnionFind uf, int width, int height) {
         HashSet<Integer> uniqueComponents = new HashSet<>();
         for (int i = 0; i < width * height; i++) {
@@ -178,10 +181,8 @@ public class MainController {
 
     public void getRectPositions(int[] imageArray) {
         Platform.runLater(() -> {
-            // Clears rectangles and text from pane
             origPane.getChildren().removeIf(node -> node instanceof Rectangle || node instanceof Text);
 
-            // Find root values indicating distinct components
             HashSet<Integer> rootValues = new HashSet<>();
             for (int i = 0; i < imageArray.length; i++) {
                 if (imageArray[i] != -1) {
@@ -190,7 +191,13 @@ public class MainController {
                 }
             }
 
-            // For each unique component determine its bounding box
+            // Count the total number of pills
+            int totalPills = rootValues.size();
+            Text countText = new Text("Total Pills: " + totalPills);
+            countText.setX(10);
+            countText.setY(20);
+            origPane.getChildren().add(countText);
+
             for (int rootValue : rootValues) {
                 int minX = Integer.MAX_VALUE;
                 int minY = Integer.MAX_VALUE;
@@ -203,7 +210,6 @@ public class MainController {
                         int x = i % width; // Calculate x position.
                         int y = i / width; // Calculate y position.
 
-                        // Update bounding box corners for the component.
                         if (x < minX) minX = x;
                         if (y < minY) minY = y;
                         if (x > maxX) maxX = x;
@@ -211,19 +217,20 @@ public class MainController {
                     }
                 }
 
-                // Draw a rectangle around the component if it's larger than a single pixel.
-                if (maxX - minX > 0 && maxY - minY > 0) {
+                // Draw a rectangle around the component if its larger than 10 pixels
+                if ((maxX - minX + 1) * (maxY - minY + 1) > 10){
                     Rectangle rect = new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
                     rect.setStroke(Color.GREEN);
                     rect.setFill(Color.TRANSPARENT);
-                    origPane.getChildren().add(rect); // Add rectangle to the pane.
+                    origPane.getChildren().add(rect);
                 }
             }
         });
     }
 
 
-     //Utility method to find the root of a component in the Union-Find structure.
+
+    //Utility method to find the root of a component in the Union-Find structure.
     private int findRoot(int[] imageArray, int i) {
         if (i == -1) {
 

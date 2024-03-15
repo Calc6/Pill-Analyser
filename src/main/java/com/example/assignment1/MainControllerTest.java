@@ -3,7 +3,9 @@ package com.example.assignment1;
 import com.example.assignment1.MainController;
 import javafx.scene.paint.Color;
 import org.junit.Test;
-
+import javafx.scene.paint.Color;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
