@@ -25,11 +25,11 @@ public class MainControllerTest {
 
         Color color4 = Color.rgb(128, 128, 128);
         Color color5 = Color.rgb(130, 130, 130);
-        assertTrue(MainController.colorSimilarity(color4, color5, 0.05));
+        assertTrue(MainController.colorSim(color4, color5, 0.05));
 
         Color color6 = Color.rgb(0, 0, 0);
         Color color7 = Color.rgb(255, 255, 255);
-        assertFalse(MainController.colorSimilarity(color6, color7, 0.05));
+        assertFalse(MainController.colorSim(color6, color7, 0.05));
     }
 
     @Test
