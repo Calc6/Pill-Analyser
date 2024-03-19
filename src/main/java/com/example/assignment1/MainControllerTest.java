@@ -31,4 +31,25 @@ public class MainControllerTest {
         Color color7 = Color.rgb(255, 255, 255);
         assertFalse(MainController.colorSimilarity(color6, color7, 0.05));
     }
+
+    @Test
+    public void testCountComponents() {
+        //UnionFind for a 3x3 grid
+        UnionFind uf = new UnionFind(9);
+
+
+        uf.union(0, 1);
+        uf.union(3, 4);
+        uf.union(4, 5);
+
+        MainController controller = new MainController();
+
+
+        int expectedComponents = 9;
+        int actualComponents = controller.countComponents(uf, 3, 3);
+
+        assertEquals(expectedComponents, actualComponents);
+    }
 }
+
+

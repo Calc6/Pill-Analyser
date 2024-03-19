@@ -39,7 +39,7 @@ public class MainController {
     private ImageView normalImageView;
 
     @FXML
-    private void handleOpenFile() {
+    private void openFile() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.gif", "*.bmp", "*.jpeg"));
         File selectedFile = fileChooser.showOpenDialog(null);
@@ -49,9 +49,6 @@ public class MainController {
             normalImageView.setImage(originalImage);
         }
     }
-
-
-
 
     @FXML
     // Handles a mouse click on the ImageView, turns black and white, and marks rectangles
@@ -78,12 +75,15 @@ public class MainController {
 
         System.out.println("Component count: " + componentCount);
 
+        int noiseThreshold = 100;
+        noiseReduction(uf.parent, noiseThreshold);
+
         getRectPositions(uf.parent);
     }
 
 
 
- // Handles the black and white conversion
+    // Handles the black and white conversion
     public void bAndw(Color targetColor){
 
         if (originalImage == null) {
@@ -108,7 +108,7 @@ public class MainController {
             for (int x = 0; x < width; x++) {
                 Color color = pixelReader.getColor(x, y);
                 bAndWImageView.setImage(updatedImage);
-                if (colorSimilarity(targetColor, color, 0.05)) {
+                if (colorSim(targetColor, color, 0.05)) {
                     pixelWriter.setColor(x, y, Color.WHITE);
                     countWhite++;
                 } else {
@@ -136,7 +136,7 @@ public class MainController {
     }
 
     // Compares two colors and returns true if they are similar, false if not within tolerance
-    public static boolean colorSimilarity(Color c1, Color c2, double tolerance) {
+    public static boolean colorSim(Color c1, Color c2, double tolerance) {
         double hueDifference = Math.abs(c1.getHue() - c2.getHue()) / 360.0;
         double satDifference = Math.abs(c1.getSaturation() - c2.getSaturation());
         double brightDifference = Math.abs(c1.getBrightness() - c2.getBrightness());
@@ -181,6 +181,7 @@ public class MainController {
     }
 
 
+    // Draws rectangles around the components and displays the total count of pills.
     public void getRectPositions(int[] imageArray) {
         Platform.runLater(() -> {
             origPane.getChildren().removeIf(node -> node instanceof Rectangle || node instanceof Text);
@@ -230,8 +231,8 @@ public class MainController {
                     origPane.getChildren().add(rect);
 
 
-                    Text text = new Text((minX + maxX) / 2, (minY + maxY) / 2, "Pills: " + pillCount + ", Size: " + ((maxX - minX + 1) * (maxY - minY + 1)));
-                    text.setFont(Font.font("Verdana", FontWeight.NORMAL, 7));
+                    Text text = new Text((minX + maxX) / 2, (minY + maxY) / 2, "Size: " + ((maxX - minX + 1) * (maxY - minY + 1)));
+                    text.setFont(Font.font("Arial", FontWeight.NORMAL, 7));
                     origPane.getChildren().add(text);
 
 
@@ -242,13 +243,10 @@ public class MainController {
             Text totalText = new Text("Total Pills: " + totalPills);
             totalText.setX(10); // Set X position of the total count text
             totalText.setY(20); // Set Y position of the total count text
-            totalText.setFont(Font.font("Verdana", FontWeight.BOLD, 10));
+            totalText.setFont(Font.font("Arial", FontWeight.BOLD, 10));
             origPane.getChildren().add(totalText);
         });
     }
-
-
-
 
     //Utility method to find the root of a component in the Union-Find structure.
     private int findRoot(int[] imageArray, int i) {
@@ -265,7 +263,26 @@ public class MainController {
         return i;
     }
 
+    // Applies noise reduction to the image.
+    public void noiseReduction(int[] imageArray, int threshold) {
+        HashMap<Integer, Integer> componentSizes = new HashMap<>();
 
+        // Calculate the size for each component
+        for (int i = 0; i < imageArray.length; i++) {
+            int root = findRoot(imageArray, i);
+            componentSizes.put(root, componentSizes.getOrDefault(root, 0) + 1);
+        }
+
+        // Mark components as noise if their size is below the threshold
+        for (int i = 0; i < imageArray.length; i++) {
+            int root = findRoot(imageArray, i);
+            if (componentSizes.getOrDefault(root, 0) < threshold) {
+                imageArray[i] = -1; // Mark as noise
+            }
+        }
+    }
+
+    // Closes the application
     @FXML
     private void handleClose(ActionEvent event) {
         Node source = (Node) event.getSource();
