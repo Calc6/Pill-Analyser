@@ -15,7 +15,6 @@
     </properties>
 
     <dependencies>
-        <!-- JavaFX dependencies -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -26,14 +25,12 @@
             <artifactId>javafx-fxml</artifactId>
             <version>19</version>
         </dependency>
-        <!-- Adding javafx-swing for SwingFXUtils support -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>19</version>
         </dependency>
 
-        <!-- JUnit 5 dependencies -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -71,7 +68,6 @@
                 <version>0.0.8</version>
                 <executions>
                     <execution>
-                        <!-- Default configuration for running: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
                             <mainClass>com.example.assignment1.Main</mainClass>

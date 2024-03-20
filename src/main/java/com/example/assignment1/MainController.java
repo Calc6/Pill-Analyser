@@ -38,6 +38,7 @@ public class MainController {
     @FXML
     private ImageView normalImageView;
 
+    //Opens a file chooser dialog to select an image file
     @FXML
     private void openFile() {
         FileChooser fileChooser = new FileChooser();
