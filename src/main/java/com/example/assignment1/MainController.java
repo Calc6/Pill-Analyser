@@ -5,6 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
 import javafx.scene.control.Slider;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
@@ -45,6 +46,11 @@ public class MainController {
     private Slider thresholdSlider;
     @FXML
     Label thresholdLabel;
+    @FXML
+    private TextArea infoTextArea;
+    @FXML
+    private TextArea rectInfoDisplay;
+
 
 
     public void initialize() {
@@ -213,10 +219,8 @@ public class MainController {
         Platform.runLater(() -> {
             origPane.getChildren().removeIf(node -> node instanceof Rectangle || node instanceof Text);
 
-            // List to store rectangles and their top-left coordinates
             List<RectangleWithPosition> rectanglesWithPositions = new ArrayList<>();
 
-            // Compute the root values indicating distinct components
             HashSet<Integer> rootValues = new HashSet<>();
             for (int i = 0; i < imageArray.length; i++) {
                 if (imageArray[i] != -1) {
@@ -231,7 +235,6 @@ public class MainController {
                 int maxX = 0;
                 int maxY = 0;
 
-
                 for (int i = 0; i < imageArray.length; i++) {
                     if (findRoot(imageArray, i) == rootValue) {
                         int width = (int) bAndWImageView.getImage().getWidth();
@@ -245,7 +248,6 @@ public class MainController {
                     }
                 }
 
-                // only consider rectangles that meet certain criteria
                 int rectWidth = maxX - minX + 1;
                 int rectHeight = maxY - minY + 1;
                 if (rectWidth > 2 && rectHeight > 2) {
@@ -254,11 +256,12 @@ public class MainController {
                 }
             }
 
-            // Sort rectangles based on their top-left position
             rectanglesWithPositions.sort(Comparator.comparingInt(RectangleWithPosition::getMinY)
                     .thenComparingInt(RectangleWithPosition::getMinX));
 
-            // Label and display the rectangles
+            StringBuilder infoText = new StringBuilder();
+            infoText.append("Total Pill: ").append(rectanglesWithPositions.size()).append("\n");
+
             int label = 1;
             for (RectangleWithPosition rwp : rectanglesWithPositions) {
                 Rectangle rect = rwp.getRectangle();
@@ -266,19 +269,28 @@ public class MainController {
                 rect.setFill(Color.TRANSPARENT);
                 origPane.getChildren().add(rect);
 
-
-                Text labelText = new Text(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2, "#" + label++);
+                Text labelText = new Text(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2, "#" + label);
                 labelText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
                 origPane.getChildren().add(labelText);
+
+                double size = rect.getWidth() * rect.getHeight();
+                infoText.append("Pill ").append(label).append(" Size: ").append(String.format("%.2f", size)).append("\n");
+                label++;
             }
 
-
-            Text totalText = new Text("Total Rectangles: " + rectanglesWithPositions.size());
-            totalText.setX(10);
-            totalText.setY(20);
-            totalText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
-            origPane.getChildren().add(totalText);
+            // Update the information display area with rectangle details
+            updateInfoDisplay(infoText.toString());
         });
+    }
+
+    // updates the display area with the given text.
+    public void updateInfoDisplay(String infoText) {
+        displayInfoTextOnUI(infoText);
+    }
+
+    // Displays the given text on the UI.
+    private void displayInfoTextOnUI(String text) {
+        rectInfoDisplay.setText(text);
     }
 
 
@@ -321,6 +333,7 @@ public class MainController {
         }
     }
 
+    // Updates the image view with the reduced noise.
     private void updateImageViewWithReducedNoise(int[] imageArray) {
         noiseReduction(imageArray, noiseThreshold);
 

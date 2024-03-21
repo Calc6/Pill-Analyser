@@ -27,9 +27,13 @@
           <Pane fx:id="origPane" style="-fx-background-color: #B0BEC5; -fx-padding: 5; -fx-background-radius: 5;">
             <ImageView fx:id="normalImageView" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
           </Pane>
-          <!-- Slider for threshold adjustment -->
           <Slider fx:id="thresholdSlider" min="0" max="100" value="50" showTickLabels="true" showTickMarks="true" majorTickUnit="10" minorTickCount="1" />
           <Label text="Threshold: 50" fx:id="thresholdLabel" />
+          <VBox fx:id="infoDisplayArea" spacing="5">
+            <children>
+              <TextArea fx:id="rectInfoDisplay" wrapText="true" editable="false" prefHeight="100.0" prefWidth="300.0"/>
+            </children>
+          </VBox>
         </children>
       </VBox>
     </HBox>
