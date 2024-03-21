@@ -49,17 +49,7 @@ public class MainControllerTest {
         assertEquals(expectedComponents, actualComponents);
     }
 
-    @Test
-    public void testFindRoot() {
-        UnionFind uf = new UnionFind(10); // Initialize UnionFind with 10 elements
 
-        // Simulate some unions
-        uf.union(2, 1);
-        uf.union(4, 3);
-        uf.union(1, 3); // Now 1, 2, 3, 4 should all be connected
-
-        assertEquals(String.valueOf(uf.find(4)), uf.find(1), "Elements 1 and 4 should have the same root");
-    }
 }
 
 

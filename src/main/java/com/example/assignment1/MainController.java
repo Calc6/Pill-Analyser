@@ -3,6 +3,8 @@ package com.example.assignment1;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.control.Slider;
 import javafx.scene.image.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Font;
@@ -33,10 +35,33 @@ public class MainController {
     public Pane origPane;
     private Image originalImage;
     private UnionFind unionFind;
+    private int noiseThreshold = 100;
     @FXML
     private ImageView bAndWImageView;
     @FXML
     private ImageView normalImageView;
+    @FXML
+    private Slider thresholdSlider;
+    @FXML
+    Label thresholdLabel;
+
+
+    public void initialize() {
+        // Example values, adjust as needed
+        thresholdSlider.setMin(0);
+        thresholdSlider.setMax(300);
+        thresholdSlider.setValue(noiseThreshold);
+        thresholdLabel.setText("Threshold: " + noiseThreshold);
+
+        thresholdSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
+            noiseThreshold = newValue.intValue();
+            thresholdLabel.setText("Threshold: " + noiseThreshold);
+            // Assuming you have a method to re-apply noise reduction on the current image with the new threshold
+             updateImageViewWithReducedNoise(uf.parent);
+        });
+    }
+
+
 
     //Opens a file chooser dialog to select an image file
     @FXML
@@ -76,7 +101,7 @@ public class MainController {
 
         System.out.println("Component count: " + componentCount);
 
-        int noiseThreshold = 100;
+
         noiseReduction(uf.parent, noiseThreshold);
 
         getRectPositions(uf.parent);
@@ -121,7 +146,7 @@ public class MainController {
         }
 
         bAndWImageView.setImage(updatedImage);
-        System.out.println("Image view should now display the updated image.");
+        System.out.println("Image view now black and white");
 
         System.out.println("White pixels: " + countWhite);
         System.out.println("Black pixels: " + countBlack);
@@ -132,7 +157,7 @@ public class MainController {
     private void ResetToOriginal() {
         if (originalImage != null) {
             bAndWImageView.setImage(originalImage);
-            System.out.println("Image view reset to the original image.");
+            System.out.println("Image reset");
         }
     }
 
@@ -188,22 +213,21 @@ public class MainController {
             origPane.getChildren().removeIf(node -> node instanceof Rectangle || node instanceof Text);
 
             // Find root values indicating distinct components
-            HashSet<Integer> rootValues = new HashSet<>();
+            HashSet<Integer> rootV = new HashSet<>();
             for (int i = 0; i < imageArray.length; i++) {
                 if (imageArray[i] != -1) {
                     int root = findRoot(imageArray, i);
-                    rootValues.add(root);
+                    rootV.add(root);
                 }
             }
 
-            int totalPills = 0;
+            int totalRectangles = 0; // Now counting rectangles instead of pills
 
-            for (int rootValue : rootValues) {
+            for (int rootValue : rootV) {
                 int minX = Integer.MAX_VALUE;
                 int minY = Integer.MAX_VALUE;
                 int maxX = 0;
                 int maxY = 0;
-                int pillCount = 0;
 
                 for (int i = 0; i < imageArray.length; i++) {
                     if (findRoot(imageArray, i) == rootValue) {
@@ -211,43 +235,40 @@ public class MainController {
                         int x = i % width; // Calculate x position.
                         int y = i / width; // Calculate y position.
 
-
                         if (x < minX) minX = x;
                         if (y < minY) minY = y;
                         if (x > maxX) maxX = x;
                         if (y > maxY) maxY = y;
-
-
-                        if (imageArray[i] != -1) {
-                            pillCount++;
-                        }
                     }
                 }
 
-                // Draw a rectangle around the component if it's larger than 10 pixels
-                if ((maxX - minX + 1) * (maxY - minY + 1) > 10) {
-                    Rectangle rect = new Rectangle(minX, minY, maxX - minX + 1, maxY - minY + 1);
+                int rectWidth = maxX - minX + 1;
+                int rectHeight = maxY - minY + 1;
+
+
+                if (rectWidth > 1 && rectHeight > 1 && rectWidth < 599 && rectHeight < 399) {
+                    Rectangle rect = new Rectangle(minX, minY, rectWidth, rectHeight);
                     rect.setStroke(Color.GREEN);
                     rect.setFill(Color.TRANSPARENT);
                     origPane.getChildren().add(rect);
 
-
-                    Text text = new Text((minX + maxX) / 2, (minY + maxY) / 2, "Size: " + ((maxX - minX + 1) * (maxY - minY + 1)));
+                    Text text = new Text((minX + maxX) / 2, (minY + maxY) / 2, "Size: " + rectWidth * rectHeight);
                     text.setFont(Font.font("Arial", FontWeight.NORMAL, 7));
                     origPane.getChildren().add(text);
 
-
-                    totalPills += pillCount;
+                    totalRectangles++; // Only count this rectangle if it meets the new size criteria
                 }
             }
 
-            Text totalText = new Text("Total Pills: " + totalPills);
+            Text totalText = new Text("Total Pills: " + totalRectangles);
             totalText.setX(10); // Set X position of the total count text
             totalText.setY(20); // Set Y position of the total count text
             totalText.setFont(Font.font("Arial", FontWeight.BOLD, 10));
             origPane.getChildren().add(totalText);
         });
     }
+
+
 
     //Utility method to find the root of a component in the Union-Find structure.
     private int findRoot(int[] imageArray, int i) {
@@ -271,17 +292,49 @@ public class MainController {
         // Calculate the size for each component
         for (int i = 0; i < imageArray.length; i++) {
             int root = findRoot(imageArray, i);
-            componentSizes.put(root, componentSizes.getOrDefault(root, 0) + 1);
+            if (root != -1) { // Ensure it's part of a component
+                componentSizes.put(root, componentSizes.getOrDefault(root, 0) + 1);
+            }
         }
 
-        // Mark components as noise if their size is below the threshold
+        // Remove components from the map that don't meet the size threshold
+        componentSizes.keySet().removeIf(key -> componentSizes.get(key) < threshold);
+
+        // Now, directly mark pixels as noise if their component has been removed
         for (int i = 0; i < imageArray.length; i++) {
             int root = findRoot(imageArray, i);
-            if (componentSizes.getOrDefault(root, 0) < threshold) {
-                imageArray[i] = -1; // Mark as noise
+            if (!componentSizes.containsKey(root)) {
+                imageArray[i] = -1; // Mark as noise since its component doesn't meet the threshold
             }
         }
     }
+
+    private void updateImageViewWithReducedNoise(int[] imageArray) {
+        // Step 1: Convert your image data (uf.parent) back to an image array if needed
+        // (This step might involve just using the array as is, or you might need to
+        // prepare it based on how your noise reduction and image processing are implemented.)
+
+        // Step 2: Apply noise reduction on the array with the current threshold
+        noiseReduction(imageArray, noiseThreshold);
+
+        // Step 3: Convert the processed image array back into an Image object
+        Image updatedImage = convertArrayToImage(imageArray);
+
+        // Step 4: Update the ImageView on the JavaFX application thread
+        Platform.runLater(() -> {
+            bAndWImageView.setImage(updatedImage);
+        });
+    }
+
+
+
+    // This method needs to be implemented based on your specific requirements
+    private Image convertArrayToImage(int[] imageArray) {
+        // Conversion logic here
+        return null; // Placeholder
+    }
+
+
 
     // Closes the application
     @FXML

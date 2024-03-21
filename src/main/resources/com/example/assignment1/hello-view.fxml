@@ -13,7 +13,6 @@
           <Label style="-fx-text-fill: #263238; -fx-font-weight: bold;" text="Black and White Conversion" />
           <Pane style="-fx-background-color: #B0BEC5; -fx-padding: 5; -fx-background-radius: 5;">
             <ImageView fx:id="bAndWImageView" fitHeight="250.0" fitWidth="300.0" onMouseClicked="#onImageClick" pickOnBounds="true" preserveRatio="true" />
-
           </Pane>
         </children>
       </VBox>
@@ -28,6 +27,9 @@
           <Pane fx:id="origPane" style="-fx-background-color: #B0BEC5; -fx-padding: 5; -fx-background-radius: 5;">
             <ImageView fx:id="normalImageView" fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
           </Pane>
+          <!-- Slider for threshold adjustment -->
+          <Slider fx:id="thresholdSlider" min="0" max="100" value="50" showTickLabels="true" showTickMarks="true" majorTickUnit="10" minorTickCount="1" />
+          <Label text="Threshold: 50" fx:id="thresholdLabel" />
         </children>
       </VBox>
     </HBox>
