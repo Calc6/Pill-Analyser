@@ -16,7 +16,7 @@
           </Pane>
         </children>
       </VBox>
-      <VBox alignment="CENTER" spacing="10"> <!-- Adjusted layout for buttons -->
+      <VBox alignment="CENTER" spacing="10">
         <Button onAction="#openFile" style="-fx-background-color: #78909C; -fx-text-fill: #ECEFF1; -fx-font-weight: bold;" text="Open" />
         <Button onAction="#ResetToOriginal" style="-fx-background-color: #78909C; -fx-text-fill: #ECEFF1; -fx-font-weight: bold;" text="Reset" />
         <Button text="Color" onAction="#colorDisjointSets" style="-fx-background-color: #78909C; -fx-text-fill: #ECEFF1; -fx-font-weight: bold;"/>

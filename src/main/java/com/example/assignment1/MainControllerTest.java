@@ -2,17 +2,12 @@ package com.example.assignment1;
 
 import javafx.scene.paint.Color;
 import org.junit.Test;
-import static org.junit.Assert.assertEquals;
-
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class MainControllerTest {
 
-
     @Test
     public void testColorSimilarity() {
-
         Color color1 = Color.RED;
         Color color2 = Color.rgb(255, 0, 0);
         assertTrue(MainController.colorSim(color1, color2, 0.05));
@@ -31,20 +26,14 @@ public class MainControllerTest {
 
     @Test
     public void testCountComponents() {
-        //UnionFind for a 3x3 grid
+        // UnionFind for a 3x3 grid
         UnionFind uf = new UnionFind(9);
-
-
         uf.union(0, 1); // Connect 0 and 1
         uf.union(3, 4); // Connect 3 and 4
         uf.union(4, 5); // Connect 4 and 5
-
         MainController controller = new MainController();
-
-
         int expectedComponents = 6;
         int actualComponents = controller.countComponents(uf, 3, 3);
-
         // There should be 6 components: 0, 1, 2, 3, 4, 5
         assertEquals(expectedComponents, actualComponents);
     }
@@ -57,8 +46,11 @@ public class MainControllerTest {
         assertEquals(uf.find(3), uf.find(1)); // Verify that element 3's root is the same as element 1's root
     }
 
+    @Test
+    public void testGenerateRandomColor() {
+        MainController controller = new MainController();
+        Color randomColor = controller.generateRandomColor(); // Generate a random color
 
-
+        assertNotNull(randomColor);// Verify that the color is not null
+    }
 }
-
-

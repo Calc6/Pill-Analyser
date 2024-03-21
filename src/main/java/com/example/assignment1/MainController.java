@@ -370,11 +370,9 @@ public class MainController {
         bAndWImageView.setImage(coloredImage);
     }
 
-    private Color generateRandomColor() {
+    public Color generateRandomColor() {
         return Color.color(Math.random(), Math.random(), Math.random());
     }
-
-
 
 
     // Closes the application
