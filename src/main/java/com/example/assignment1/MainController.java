@@ -27,6 +27,7 @@ import javafx.scene.shape.Rectangle;
 
 
 
+
 import javafx.scene.input.MouseEvent;
 
 
@@ -212,61 +213,75 @@ public class MainController {
         Platform.runLater(() -> {
             origPane.getChildren().removeIf(node -> node instanceof Rectangle || node instanceof Text);
 
-            // Find root values indicating distinct components
-            HashSet<Integer> rootV = new HashSet<>();
+            // List to store rectangles and their top-left coordinates
+            List<RectangleWithPosition> rectanglesWithPositions = new ArrayList<>();
+
+            // Compute the root values indicating distinct components
+            HashSet<Integer> rootValues = new HashSet<>();
             for (int i = 0; i < imageArray.length; i++) {
                 if (imageArray[i] != -1) {
                     int root = findRoot(imageArray, i);
-                    rootV.add(root);
+                    rootValues.add(root);
                 }
             }
 
-            int totalRectangles = 0; // Now counting rectangles instead of pills
-
-            for (int rootValue : rootV) {
+            // Process each component represented by its root value
+            for (int rootValue : rootValues) {
                 int minX = Integer.MAX_VALUE;
                 int minY = Integer.MAX_VALUE;
                 int maxX = 0;
                 int maxY = 0;
 
+                // Find the bounding box for each component
                 for (int i = 0; i < imageArray.length; i++) {
                     if (findRoot(imageArray, i) == rootValue) {
                         int width = (int) bAndWImageView.getImage().getWidth();
-                        int x = i % width; // Calculate x position.
-                        int y = i / width; // Calculate y position.
+                        int x = i % width;
+                        int y = i / width;
 
-                        if (x < minX) minX = x;
-                        if (y < minY) minY = y;
-                        if (x > maxX) maxX = x;
-                        if (y > maxY) maxY = y;
+                        minX = Math.min(minX, x);
+                        minY = Math.min(minY, y);
+                        maxX = Math.max(maxX, x);
+                        maxY = Math.max(maxY, y);
                     }
                 }
 
+                // Only consider rectangles that meet certain criteria (e.g., larger than 2x2 pixels)
                 int rectWidth = maxX - minX + 1;
                 int rectHeight = maxY - minY + 1;
-
-
-                if (rectWidth > 1 && rectHeight > 1 && rectWidth < 599 && rectHeight < 399) {
+                if (rectWidth > 2 && rectHeight > 2) {
                     Rectangle rect = new Rectangle(minX, minY, rectWidth, rectHeight);
-                    rect.setStroke(Color.GREEN);
-                    rect.setFill(Color.TRANSPARENT);
-                    origPane.getChildren().add(rect);
-
-                    Text text = new Text((minX + maxX) / 2, (minY + maxY) / 2, "Size: " + rectWidth * rectHeight);
-                    text.setFont(Font.font("Arial", FontWeight.NORMAL, 7));
-                    origPane.getChildren().add(text);
-
-                    totalRectangles++; // Only count this rectangle if it meets the new size criteria
+                    rectanglesWithPositions.add(new RectangleWithPosition(rect, minX, minY));
                 }
             }
 
-            Text totalText = new Text("Total Pills: " + totalRectangles);
-            totalText.setX(10); // Set X position of the total count text
-            totalText.setY(20); // Set Y position of the total count text
-            totalText.setFont(Font.font("Arial", FontWeight.BOLD, 10));
+            // Sort rectangles based on their top-left position (Y first, then X)
+            rectanglesWithPositions.sort(Comparator.comparingInt(RectangleWithPosition::getMinY)
+                    .thenComparingInt(RectangleWithPosition::getMinX));
+
+            // Label and display the rectangles
+            int label = 1;
+            for (RectangleWithPosition rwp : rectanglesWithPositions) {
+                Rectangle rect = rwp.getRectangle();
+                rect.setStroke(Color.GREEN);
+                rect.setFill(Color.TRANSPARENT);
+                origPane.getChildren().add(rect);
+
+                // Place a label in the center (or any preferred location) of each rectangle
+                Text labelText = new Text(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2, "#" + label++);
+                labelText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+                origPane.getChildren().add(labelText);
+            }
+
+            // Optionally, update the display to show the total number of rectangles found
+            Text totalText = new Text("Total Rectangles: " + rectanglesWithPositions.size());
+            totalText.setX(10);
+            totalText.setY(20);
+            totalText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
             origPane.getChildren().add(totalText);
         });
     }
+
 
 
 
