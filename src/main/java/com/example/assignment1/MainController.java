@@ -26,9 +26,6 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.shape.Rectangle;
 
-
-
-
 import javafx.scene.input.MouseEvent;
 
 
@@ -63,7 +60,6 @@ public class MainController {
         thresholdSlider.valueProperty().addListener((observable, oldValue, newValue) -> {
             noiseThreshold = newValue.intValue();
             thresholdLabel.setText("Threshold: " + noiseThreshold);
-            // Assuming you have a method to re-apply noise reduction on the current image with the new threshold
              updateImageViewWithReducedNoise(uf.parent);
         });
     }
