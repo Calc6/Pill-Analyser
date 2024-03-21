@@ -225,14 +225,13 @@ public class MainController {
                 }
             }
 
-            // Process each component represented by its root value
             for (int rootValue : rootValues) {
                 int minX = Integer.MAX_VALUE;
                 int minY = Integer.MAX_VALUE;
                 int maxX = 0;
                 int maxY = 0;
 
-                // Find the bounding box for each component
+
                 for (int i = 0; i < imageArray.length; i++) {
                     if (findRoot(imageArray, i) == rootValue) {
                         int width = (int) bAndWImageView.getImage().getWidth();
@@ -246,7 +245,7 @@ public class MainController {
                     }
                 }
 
-                // Only consider rectangles that meet certain criteria (e.g., larger than 2x2 pixels)
+                // only consider rectangles that meet certain criteria
                 int rectWidth = maxX - minX + 1;
                 int rectHeight = maxY - minY + 1;
                 if (rectWidth > 2 && rectHeight > 2) {
@@ -255,7 +254,7 @@ public class MainController {
                 }
             }
 
-            // Sort rectangles based on their top-left position (Y first, then X)
+            // Sort rectangles based on their top-left position
             rectanglesWithPositions.sort(Comparator.comparingInt(RectangleWithPosition::getMinY)
                     .thenComparingInt(RectangleWithPosition::getMinX));
 
@@ -267,13 +266,13 @@ public class MainController {
                 rect.setFill(Color.TRANSPARENT);
                 origPane.getChildren().add(rect);
 
-                // Place a label in the center (or any preferred location) of each rectangle
+
                 Text labelText = new Text(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2, "#" + label++);
                 labelText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
                 origPane.getChildren().add(labelText);
             }
 
-            // Optionally, update the display to show the total number of rectangles found
+
             Text totalText = new Text("Total Rectangles: " + rectanglesWithPositions.size());
             totalText.setX(10);
             totalText.setY(20);
@@ -304,10 +303,9 @@ public class MainController {
     public void noiseReduction(int[] imageArray, int threshold) {
         HashMap<Integer, Integer> componentSizes = new HashMap<>();
 
-        // Calculate the size for each component
         for (int i = 0; i < imageArray.length; i++) {
             int root = findRoot(imageArray, i);
-            if (root != -1) { // Ensure it's part of a component
+            if (root != -1) {
                 componentSizes.put(root, componentSizes.getOrDefault(root, 0) + 1);
             }
         }
@@ -315,37 +313,25 @@ public class MainController {
         // Remove components from the map that don't meet the size threshold
         componentSizes.keySet().removeIf(key -> componentSizes.get(key) < threshold);
 
-        // Now, directly mark pixels as noise if their component has been removed
         for (int i = 0; i < imageArray.length; i++) {
             int root = findRoot(imageArray, i);
             if (!componentSizes.containsKey(root)) {
-                imageArray[i] = -1; // Mark as noise since its component doesn't meet the threshold
+                imageArray[i] = -1;
             }
         }
     }
 
     private void updateImageViewWithReducedNoise(int[] imageArray) {
-        // Step 1: Convert your image data (uf.parent) back to an image array if needed
-        // (This step might involve just using the array as is, or you might need to
-        // prepare it based on how your noise reduction and image processing are implemented.)
-
-        // Step 2: Apply noise reduction on the array with the current threshold
         noiseReduction(imageArray, noiseThreshold);
 
-        // Step 3: Convert the processed image array back into an Image object
         Image updatedImage = convertArrayToImage(imageArray);
 
-        // Step 4: Update the ImageView on the JavaFX application thread
         Platform.runLater(() -> {
             bAndWImageView.setImage(updatedImage);
         });
     }
 
-
-
-    // This method needs to be implemented based on your specific requirements
     private Image convertArrayToImage(int[] imageArray) {
-        // Conversion logic here
         return null; // Placeholder
     }
 
