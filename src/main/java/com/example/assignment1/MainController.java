@@ -341,7 +341,7 @@ public class MainController {
     }
 
     private Image convertArrayToImage(int[] imageArray) {
-        return null; // Placeholder
+        return null;
     }
 
     public void colorDisjointSets() {
