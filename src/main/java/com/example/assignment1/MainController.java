@@ -270,7 +270,7 @@ public class MainController {
                 origPane.getChildren().add(rect);
 
                 Text labelText = new Text(rect.getX() + rect.getWidth() / 2, rect.getY() + rect.getHeight() / 2, "#" + label);
-                labelText.setFont(Font.font("Arial", FontWeight.BOLD, 14));
+                labelText.setFont(Font.font("Arial", FontWeight.BOLD, 10));
                 origPane.getChildren().add(labelText);
 
                 double size = rect.getWidth() * rect.getHeight();

@@ -49,6 +49,15 @@ public class MainControllerTest {
         assertEquals(expectedComponents, actualComponents);
     }
 
+    @Test
+    public void testFindRoot() {
+        UnionFind uf = new UnionFind(10);
+        uf.union(1, 2); // Union some elements
+        uf.union(2, 3);
+        assertEquals(uf.find(3), uf.find(1)); // Verify that element 3's root is the same as element 1's root
+    }
+
+
 
 }
 
