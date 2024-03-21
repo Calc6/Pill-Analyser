@@ -348,6 +348,33 @@ public class MainController {
         return null; // Placeholder
     }
 
+    public void colorDisjointSets() {
+        int width = (int) bAndWImageView.getImage().getWidth();
+        int height = (int) bAndWImageView.getImage().getHeight();
+        WritableImage coloredImage = new WritableImage(width, height);
+        PixelWriter writer = coloredImage.getPixelWriter();
+
+        // Generate a color for each set
+        Map<Integer, Color> setColorMap = new HashMap<>();
+        int index;
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                index = y * width + x;
+                int root = uf.find(index);
+                setColorMap.putIfAbsent(root, generateRandomColor());
+
+                writer.setColor(x, y, setColorMap.get(root));
+            }
+        }
+
+        bAndWImageView.setImage(coloredImage);
+    }
+
+    private Color generateRandomColor() {
+        return Color.color(Math.random(), Math.random(), Math.random());
+    }
+
+
 
 
     // Closes the application

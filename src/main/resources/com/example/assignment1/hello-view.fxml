@@ -19,6 +19,7 @@
       <VBox alignment="CENTER" spacing="10"> <!-- Adjusted layout for buttons -->
         <Button onAction="#openFile" style="-fx-background-color: #78909C; -fx-text-fill: #ECEFF1; -fx-font-weight: bold;" text="Open" />
         <Button onAction="#ResetToOriginal" style="-fx-background-color: #78909C; -fx-text-fill: #ECEFF1; -fx-font-weight: bold;" text="Reset" />
+        <Button text="Color" onAction="#colorDisjointSets" style="-fx-background-color: #78909C; -fx-text-fill: #ECEFF1; -fx-font-weight: bold;"/>
         <Button onAction="#handleClose" style="-fx-background-color: #78909C; -fx-text-fill: #ECEFF1; -fx-font-weight: bold;" text="Close" />
       </VBox>
       <VBox alignment="CENTER" spacing="10" style="-fx-background-color: #CFD8DC; -fx-padding: 10; -fx-background-radius: 5;">
