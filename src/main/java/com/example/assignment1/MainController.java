@@ -43,8 +43,7 @@ public class MainController {
     private Slider thresholdSlider;
     @FXML
     Label thresholdLabel;
-    @FXML
-    private TextArea infoTextArea;
+
     @FXML
     private TextArea rectInfoDisplay;
 
@@ -366,6 +365,7 @@ public class MainController {
         bAndWImageView.setImage(coloredImage);
     }
 
+    //generates random color
     public Color generateRandomColor() {
         return Color.color(Math.random(), Math.random(), Math.random());
     }

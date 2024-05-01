@@ -26,15 +26,14 @@ public class MainControllerTest {
 
     @Test
     public void testCountComponents() {
-        // UnionFind for a 3x3 grid
         UnionFind uf = new UnionFind(9);
-        uf.union(0, 1); // Connect 0 and 1
-        uf.union(3, 4); // Connect 3 and 4
-        uf.union(4, 5); // Connect 4 and 5
+        uf.union(0, 1);
+        uf.union(3, 4);
+        uf.union(4, 5);
         MainController controller = new MainController();
         int expectedComponents = 6;
         int actualComponents = controller.countComponents(uf, 3, 3);
-        // There should be 6 components: 0, 1, 2, 3, 4, 5
+
         assertEquals(expectedComponents, actualComponents);
     }
 
