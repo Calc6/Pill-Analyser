@@ -1,4 +1,4 @@
-##Pill and Capsule Analyser
+##Pill and Capsule Analyser##
 by Calum Cullen
 
 #Features/Tools
