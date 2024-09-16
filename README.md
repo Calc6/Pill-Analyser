@@ -1,6 +1,5 @@
-# Pill and Capsule Analyser
-
-by Calum Cullen
+# Pill and Capsule Analyzer 
+This JavaFX app analyzes images of pills and capsules. It uses union-find algorithms to identify, count, and label pills based on user-defined parameters such as color and size. Features include black-and-white image conversion, disjoint set recognition, sequential numbering, and pill classification. Includes JUnit tests and JMH benchmarking.
 
 ## Features/Tools
 
